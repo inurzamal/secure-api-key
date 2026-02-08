@@ -19,7 +19,7 @@ import java.util.Collections;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ApiKeyAuthFilter extends OncePerRequestFilter {
+public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String API_PREFIX = "/api";
     private final ApiKeyProperties apiKeyProperties;

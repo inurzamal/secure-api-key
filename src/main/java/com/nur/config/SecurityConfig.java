@@ -1,6 +1,6 @@
 package com.nur.config;
 
-import com.nur.security.ApiKeyAuthFilter;
+import com.nur.security.ApiKeyAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final ApiKeyAuthFilter apiKeyAuthFilter;
+    private final ApiKeyAuthenticationFilter apiKeyAuthFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
