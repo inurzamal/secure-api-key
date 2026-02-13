@@ -1,4 +1,0 @@
-security:
-  api-key:
-    header-name: X-API-KEY
-    value: my-secret-key-123

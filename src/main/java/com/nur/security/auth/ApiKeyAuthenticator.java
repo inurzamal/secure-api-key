@@ -1,0 +1,30 @@
+package com.nur.security.auth;
+
+import com.nur.config.properties.SecurityProperties;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.stereotype.Component;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class ApiKeyAuthenticator {
+
+    private static final String API_KEY_HEADER = "X-API-KEY";
+    private final SecurityProperties securityProperties;
+
+    public Authentication validateApiKey(HttpServletRequest request) {
+        String providedKey = request.getHeader(API_KEY_HEADER);
+        if (providedKey == null || !providedKey.equals(securityProperties.apiKey())) {
+            log.warn("Invalid API key attempt from IP: {}", request.getRemoteAddr());
+            throw new BadCredentialsException("Invalid or missing API key");
+        }
+
+        log.debug("API key validation successful for: {}", request.getRequestURI());
+        return new ApiKeyAuthentication(providedKey, AuthorityUtils.NO_AUTHORITIES);
+    }
+}
