@@ -1,21 +1,15 @@
 package com.nur.security.access;
 
 import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.server.PathContainer;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
-
-import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 @Component
 public class EndpointAccessProvider {
-
-    private static final List<String> PROTECTED_PATHS = List.of("/api/**", "/kafka/**");
 
     private static final List<String> PUBLIC_PATHS = List.of(
             "/swagger-ui/**",
@@ -23,35 +17,36 @@ public class EndpointAccessProvider {
             "/actuator/**"
     );
 
-    private static final PathPatternParser pathPatternParser = new PathPatternParser();
+    private static final PathPatternParser PARSER = new PathPatternParser();
 
     @Value("${server.servlet.context-path:}")
     private String contextPath;
 
-    List<PathPattern> publicPatterns = new ArrayList<>();
+    private List<PathPattern> publicPatterns;
 
     @PostConstruct
-    public void initialize() {
-
-        String basePath = (contextPath == null || contextPath.isEmpty())? "" : contextPath;
-
+    public void init() {
         publicPatterns = PUBLIC_PATHS.stream()
-                .map(path -> pathPatternParser.parse(basePath + path))
+                .map(PARSER::parse)
                 .toList();
-
-        log.info("Initialized public endpoint patterns with contextPath={}", contextPath);
     }
 
-    public boolean doesNotRequireAuthentication(String requestURI) {
-        PathContainer pathContainer = PathContainer.parsePath(requestURI);
+    public boolean isPublicEndpoint(String requestURI) {
+        String normalized = removeContextPath(requestURI);
+        PathContainer container = PathContainer.parsePath(normalized);
         return publicPatterns.stream()
-                .anyMatch(pattern -> pattern.matches(pathContainer));
+                .anyMatch(p -> p.matches(container));
     }
 
-    public String[] getProtectedPathsArray() {
-        return PROTECTED_PATHS.stream()
-                .map(path -> (contextPath == null || contextPath.isEmpty() ? "" : contextPath) + path)
-                .toArray(String[]::new);
+    private String removeContextPath(String uri) {
+        if (contextPath == null || contextPath.isBlank()) return uri;
+        if (uri.startsWith(contextPath)) {
+            return uri.substring(contextPath.length());
+        }
+        return uri;
     }
 
+    public String[] getPublicPathsArray() {
+        return PUBLIC_PATHS.toArray(new String[0]);
+    }
 }

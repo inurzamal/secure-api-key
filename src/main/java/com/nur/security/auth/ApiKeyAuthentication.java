@@ -34,5 +34,5 @@ public class ApiKeyAuthentication extends AbstractAuthenticationToken {
     public int hashCode() {
         return super.hashCode();
     }
-}
 
+}
