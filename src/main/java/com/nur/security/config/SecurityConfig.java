@@ -2,7 +2,7 @@ package com.nur.security.config;
 
 import com.nur.security.access.EndpointAccessProvider;
 import com.nur.security.auth.ApiKeyAuthenticator;
-import com.nur.security.filter.ApiKeyAuthFilter;
+import com.nur.security.filter.ApiKeyFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +32,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new ApiKeyAuthFilter(keyAuthenticator, accessProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new ApiKeyFilter(keyAuthenticator, accessProvider), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 @RequiredArgsConstructor
-public class ApiKeyAuthFilter extends OncePerRequestFilter {
+public class ApiKeyFilter extends OncePerRequestFilter {
 
     private final ApiKeyAuthenticator authenticator;
     private final EndpointAccessProvider accessProvider;
