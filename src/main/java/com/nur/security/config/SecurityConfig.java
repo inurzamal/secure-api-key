@@ -1,6 +1,6 @@
 package com.nur.security.config;
 
-import com.nur.config.properties.SecurityProperties;
+import com.nur.security.auth.ApiKeyAuthenticator;
 import com.nur.security.filter.ApiKeyFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -10,13 +10,13 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import static com.nur.security.constants.SecurityConstants.PUBLIC_MATCHERS;
+import static com.nur.security.constants.SecurityConstants.PUBLIC_PATHS;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final SecurityProperties securityProperties;
+    private final ApiKeyAuthenticator keyAuthenticator;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -27,12 +27,12 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(PUBLIC_MATCHERS.toArray(String[]::new)).permitAll()
+                        .requestMatchers(PUBLIC_PATHS.toArray(String[]::new)).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new ApiKeyFilter(securityProperties), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new ApiKeyFilter(keyAuthenticator), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 }
